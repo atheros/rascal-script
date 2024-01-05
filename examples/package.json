@@ -1,0 +1,18 @@
+{
+  "name": "rascal-script-examples",
+  "version": "0.0.1",
+  "description": "Rascal script examples",
+  "author": "Przemysław Grzywacz <nexather@gmail.com>",
+  "dependencies": {
+    "enquirer": "^2.4.1",
+    "expr-eval": "^2.0.2",
+    "minimist": "^1.2.8",
+    "rascal-script": "file://../"
+  },
+  "devDependencies": {
+    "@types/minimist": "^1.2.5",
+    "@types/node": "^20.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

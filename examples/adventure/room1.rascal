@@ -1,0 +1,109 @@
+local has_light = false
+local found_lamp = false
+local lit_wait_count = 0
+local had_click = false
+local door_open = false
+
+room1:
+    log "You're in a dark room" if not has_light
+    log "You're in a dark room, somewhat lit by a small LED lamp" if has_light
+
+    wait 500
+    log "What do you do?"
+
+
+choice_loop:
+    choice
+        "Feel the walls around you" if not has_light and not found_lamp
+            log "You feel the walls around you. They're made of brick."
+            wait 1000
+            log "Slightly damp, too."
+            wait 2000
+            log "To the north, you feel a door."
+            wait 500
+            log "It is closed."
+
+            wait 1000
+            log "In the east, you feel a wall, nothing more."
+
+            wait 1000
+            log "Same thing in the west. Just another wall."
+
+            wait 1000
+            log "In the south, you feel a wall, and..."
+
+            wait 500
+            log "There is something..."
+
+            wait 1000
+            log "A small shelf, with a lamp?"
+            $ found_lamp = true
+
+        "Turn on the lamp" if found_lamp and not has_light
+
+            log "You touch the lamp trying to feel where the button is."
+
+            wait 1000
+            log "You find it, and press it!"
+
+            wait 100
+            log "The room is now lit."
+
+            $ has_light = true
+
+        "Look around" if has_light
+            log "You look around the room."
+            wait 1000
+            log "It's a small room, with a solid steel door to the north."
+            log "There is a small shelf to the south, with a small LED lamp on it. It is turned on."
+            log "The walls are made of brick, and are slightly damp."
+
+        "Look around" if not has_light
+            log "You look around the room."
+            wait 1000
+            log "You can't see anything. It's too dark."
+
+        "Open the door" if has_light and not door_open
+            log "You push the door."
+            wait 500
+
+            if had_click
+                log "The door moves slowly."
+                wait 1000
+                log "It's now open."
+                $ door_open = true
+            else
+                log "It's locked."
+            end
+
+       "Wait"
+            log "You wait."
+            wait 2000
+            log ${has_light} ${lit_wait_count}
+
+            if has_light
+                $ lit_wait_count = lit_wait_count + 1
+
+                if had_click
+                    log "You hear a loud metallic click coming from the north.1"
+                    $ had_click = false
+                elif lit_wait_count == 3
+                    log "You hear a loud metallic click coming from the north.2"
+                    $ had_click = true
+                    $ lit_wait_count = 0
+                else
+                    log "Nothing happens."
+                end
+            else
+                log "Nothing happens."
+            end
+            wait 200
+        "Go north" if door_open
+            log "You go north."
+            wait 1000
+            log "Game over!"
+            exit
+    end
+
+    jump "choice_loop"
+exit

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "outDir": "dist/",
+    "rootDir": "./",
+    "declaration": true,
+    "types": [
+      "node", "jest"
+    ],
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "esm": false,
+    "compilerOptions": {
+    }
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}

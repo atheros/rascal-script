@@ -1,0 +1,38 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+      - next
+      - beta
+      - alpha
+      # Support, hotfix branches like: 1.0.x or 1.x
+      - '([0-9]+)(\.([0-9]+))?\.x'
+
+  # Allows triggering the workflow manually
+  workflow_dispatch:
+
+jobs:
+  regular-checks:
+    name: Build and test
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Perform regular checks
+        run: |
+          npm install
+          npm run lint
+          npm run build
+          npm run test

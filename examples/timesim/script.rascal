@@ -1,0 +1,7 @@
+local iterations = 0
+
+while true
+  log "Iteration: " ${iterations}
+  $ iterations = iterations + 1
+  wait 1000
+end
