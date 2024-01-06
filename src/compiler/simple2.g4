@@ -14,6 +14,7 @@ line
     | whileBlock
     | localVar
     | globalVar
+    | setVar
     | choiceBlock
     | whitespace+
     ;
@@ -57,6 +58,10 @@ localVar
 
 globalVar
     : whitespace? GLOBAL whitespace IDENTIFIER whitespace? EQUALS whitespace? value comment?
+    ;
+
+setVar
+    : whitespace? SET whitespace IDENTIFIER whitespace? EQUALS whitespace? value comment?
     ;
 
 label
@@ -161,6 +166,10 @@ EXPR
 
 LOCAL
     : 'local'
+    ;
+
+SET
+    : 'set'
     ;
 
 DEFINE

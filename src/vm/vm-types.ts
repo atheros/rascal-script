@@ -24,10 +24,12 @@ export enum VmScriptCommands {
     /** Jump if command result equals value. */
     JUMP_CMD = ".jC?",
     // JUMP_IF_ELSE = ".j?!",
-    /** Declare a local variable. */
+    /** Declare a script local variable. */
     LOCAL = ".vl",
     /** Declare a global variable. */
     GLOBAL = ".vg",
+    /** Declare a routine variable. */
+    SET = '.vs',
     /** Yield execution to another routine. */
     YIELD = ".y",
     /** Exit execution of this routine. */

@@ -1,4 +1,4 @@
-// Generated from D:/Projects/rascal-script/src/compiler/simple2.g4 by ANTLR 4.13.1
+// Generated from src/compiler/simple2.g4 by ANTLR 4.13.1
 // noinspection ES6UnusedImports,JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 
 import {
@@ -11,9 +11,7 @@ import {
 	Token, TokenStream,
 	Interval, IntervalSet
 } from 'antlr4';
-import simple2Listener from "./simple2Listener";
-import simple2Visitor from "./simple2Visitor";
-
+import simple2Listener from "./simple2Listener.js";
 // for running tests with parameters, TODO: discuss strategy for typed parameters in CI
 // eslint-disable-next-line no-unused-vars
 type int = number;
@@ -30,9 +28,9 @@ export default class simple2Parser extends Parser {
 	public static readonly SUBEXPR = 9;
 	public static readonly EXPR = 10;
 	public static readonly LOCAL = 11;
-	public static readonly DEFINE = 12;
-	public static readonly GLOBAL = 13;
-	public static readonly SET = 14;
+	public static readonly SET = 12;
+	public static readonly DEFINE = 13;
+	public static readonly GLOBAL = 14;
 	public static readonly LABEL = 15;
 	public static readonly TRUE = 16;
 	public static readonly FALSE = 17;
@@ -79,11 +77,10 @@ export default class simple2Parser extends Parser {
                                                             null, "'do'", 
                                                             null, null, 
                                                             null, "'local'", 
-                                                            "'define'", 
+                                                            "'set'", "'define'", 
                                                             "'global'", 
-                                                            "'set'", null, 
-                                                            "'true'", "'false'", 
-                                                            "'choice'", 
+                                                            null, "'true'", 
+                                                            "'false'", "'choice'", 
                                                             "'null'", null, 
                                                             null, null, 
                                                             null, null, 
@@ -95,8 +92,8 @@ export default class simple2Parser extends Parser {
                                                              "DO", "COMMENT", 
                                                              "SUBEXPR", 
                                                              "EXPR", "LOCAL", 
-                                                             "DEFINE", "GLOBAL", 
-                                                             "SET", "LABEL", 
+                                                             "SET", "DEFINE", 
+                                                             "GLOBAL", "LABEL", 
                                                              "TRUE", "FALSE", 
                                                              "CHOICE", "NULL", 
                                                              "IDENTIFIER", 
@@ -149,7 +146,7 @@ export default class simple2Parser extends Parser {
 					case 8:
 					case 10:
 					case 11:
-					case 13:
+					case 12:
 					case 14:
 					case 15:
 					case 18:
@@ -180,7 +177,7 @@ export default class simple2Parser extends Parser {
 			this.state = 62;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 9760162) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 9756066) !== 0)) {
 				{
 				this.state = 61;
 				this.line();
@@ -1688,12 +1685,12 @@ export default class simple2Parser extends Parser {
 	0,0,0,213,214,1,0,0,0,214,215,1,0,0,0,215,217,5,26,0,0,216,218,3,46,23,
 	0,217,216,1,0,0,0,217,218,1,0,0,0,218,219,1,0,0,0,219,221,3,34,17,0,220,
 	222,3,30,15,0,221,220,1,0,0,0,221,222,1,0,0,0,222,21,1,0,0,0,223,225,3,
-	46,23,0,224,223,1,0,0,0,224,225,1,0,0,0,225,226,1,0,0,0,226,227,5,13,0,
+	46,23,0,224,223,1,0,0,0,224,225,1,0,0,0,225,226,1,0,0,0,226,227,5,14,0,
 	0,227,228,3,46,23,0,228,230,5,20,0,0,229,231,3,46,23,0,230,229,1,0,0,0,
 	230,231,1,0,0,0,231,232,1,0,0,0,232,234,5,26,0,0,233,235,3,46,23,0,234,
 	233,1,0,0,0,234,235,1,0,0,0,235,236,1,0,0,0,236,238,3,34,17,0,237,239,3,
 	30,15,0,238,237,1,0,0,0,238,239,1,0,0,0,239,23,1,0,0,0,240,242,3,46,23,
-	0,241,240,1,0,0,0,241,242,1,0,0,0,242,243,1,0,0,0,243,244,5,14,0,0,244,
+	0,241,240,1,0,0,0,241,242,1,0,0,0,242,243,1,0,0,0,243,244,5,12,0,0,244,
 	245,3,46,23,0,245,247,5,20,0,0,246,248,3,46,23,0,247,246,1,0,0,0,247,248,
 	1,0,0,0,248,249,1,0,0,0,249,251,5,26,0,0,250,252,3,46,23,0,251,250,1,0,
 	0,0,251,252,1,0,0,0,252,253,1,0,0,0,253,255,3,34,17,0,254,256,3,30,15,0,
@@ -1771,14 +1768,6 @@ export class ProgContext extends ParserRuleContext {
 	 		listener.exitProg(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitProg) {
-			return visitor.visitProg(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -1839,14 +1828,6 @@ export class LineContext extends ParserRuleContext {
 	 		listener.exitLine(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitLine) {
-			return visitor.visitLine(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -1904,14 +1885,6 @@ export class IfBlockContext extends ParserRuleContext {
 	 		listener.exitIfBlock(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitIfBlock) {
-			return visitor.visitIfBlock(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -1949,14 +1922,6 @@ export class ElifBlockContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitElifBlock) {
 	 		listener.exitElifBlock(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitElifBlock) {
-			return visitor.visitElifBlock(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -1999,14 +1964,6 @@ export class ElseBlockContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitElseBlock) {
 	 		listener.exitElseBlock(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitElseBlock) {
-			return visitor.visitElseBlock(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2057,14 +2014,6 @@ export class DoBlockContext extends ParserRuleContext {
 	 		listener.exitDoBlock(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitDoBlock) {
-			return visitor.visitDoBlock(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2113,14 +2062,6 @@ export class WhileBlockContext extends ParserRuleContext {
 	 		listener.exitWhileBlock(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitWhileBlock) {
-			return visitor.visitWhileBlock(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2157,14 +2098,6 @@ export class CommandContext extends ParserRuleContext {
 	 		listener.exitCommand(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitCommand) {
-			return visitor.visitCommand(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2187,14 +2120,6 @@ export class CommandNameContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitCommandName) {
 	 		listener.exitCommandName(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitCommandName) {
-			return visitor.visitCommandName(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2228,14 +2153,6 @@ export class CommandArgsContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitCommandArgs) {
 	 		listener.exitCommandArgs(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitCommandArgs) {
-			return visitor.visitCommandArgs(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2280,14 +2197,6 @@ export class LocalVarContext extends ParserRuleContext {
 	 		listener.exitLocalVar(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitLocalVar) {
-			return visitor.visitLocalVar(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2328,14 +2237,6 @@ export class GlobalVarContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitGlobalVar) {
 	 		listener.exitGlobalVar(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitGlobalVar) {
-			return visitor.visitGlobalVar(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2380,14 +2281,6 @@ export class SetVarContext extends ParserRuleContext {
 	 		listener.exitSetVar(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitSetVar) {
-			return visitor.visitSetVar(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2418,14 +2311,6 @@ export class LabelContext extends ParserRuleContext {
 	 		listener.exitLabel(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitLabel) {
-			return visitor.visitLabel(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2451,14 +2336,6 @@ export class ExprstmtContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitExprstmt) {
 	 		listener.exitExprstmt(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitExprstmt) {
-			return visitor.visitExprstmt(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2488,14 +2365,6 @@ export class CommentContext extends ParserRuleContext {
 	 		listener.exitComment(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitComment) {
-			return visitor.visitComment(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2521,14 +2390,6 @@ export class IfexprContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitIfexpr) {
 	 		listener.exitIfexpr(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitIfexpr) {
-			return visitor.visitIfexpr(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2567,14 +2428,6 @@ export class ValueContext extends ParserRuleContext {
 	 		listener.exitValue(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitValue) {
-			return visitor.visitValue(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2600,14 +2453,6 @@ export class NumberContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitNumber) {
 	 		listener.exitNumber(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitNumber) {
-			return visitor.visitNumber(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2637,14 +2482,6 @@ export class BooleanContext extends ParserRuleContext {
 	 		listener.exitBoolean(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitBoolean) {
-			return visitor.visitBoolean(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2667,14 +2504,6 @@ export class NullContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitNull) {
 	 		listener.exitNull(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitNull) {
-			return visitor.visitNull(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2701,14 +2530,6 @@ export class StringContext extends ParserRuleContext {
 	 		listener.exitString(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitString) {
-			return visitor.visitString(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2733,14 +2554,6 @@ export class SubexprContext extends ParserRuleContext {
 	 		listener.exitSubexpr(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitSubexpr) {
-			return visitor.visitSubexpr(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2763,14 +2576,6 @@ export class WhitespaceContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitWhitespace) {
 	 		listener.exitWhitespace(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitWhitespace) {
-			return visitor.visitWhitespace(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }
@@ -2818,14 +2623,6 @@ export class ChoiceBlockContext extends ParserRuleContext {
 	 		listener.exitChoiceBlock(this);
 		}
 	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitChoiceBlock) {
-			return visitor.visitChoiceBlock(this);
-		} else {
-			return visitor.visitChildren(this);
-		}
-	}
 }
 
 
@@ -2866,14 +2663,6 @@ export class ChoiceOptContext extends ParserRuleContext {
 	public exitRule(listener: simple2Listener): void {
 	    if(listener.exitChoiceOpt) {
 	 		listener.exitChoiceOpt(this);
-		}
-	}
-	// @Override
-	public accept<Result>(visitor: simple2Visitor<Result>): Result {
-		if (visitor.visitChoiceOpt) {
-			return visitor.visitChoiceOpt(this);
-		} else {
-			return visitor.visitChildren(this);
 		}
 	}
 }

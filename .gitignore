@@ -8,3 +8,4 @@ coverage/
 dist/
 *.lock
 
+antlr-*-complete.jar

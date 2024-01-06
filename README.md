@@ -262,14 +262,14 @@ See also
 [Co-routines](#Co-routines),
 [Expressions](#Expressions).
 
-#### Command: let
+#### Command: set
 
 Declare a variable in routine context and assign a value to it.
 
 Example:
 ```
-let someVar = ${1 + 2}
-let anotherVar = "Hello World"
+set someVar = ${1 + 2}
+set anotherVar = "Hello World"
 ```
 
 See also
@@ -329,12 +329,12 @@ The **script** context is shared between all routines that are currently executi
 You can use the `local` command to create a variable in script context.
 
 The **routine** context is not shared. It is private to the routine that is currently executing.
-You can use the `let` command to create a variable in routine context.
+You can use the `set` command to create a variable in routine context.
 
 ```
 global aGlobalVar = true
 local aScriptVar = "Hello World"
-let aRoutineVar = ${1 + 2}
+set aRoutineVar = ${1 + 2}
 ```
 
 ##### Declaration moment
@@ -519,6 +519,14 @@ I don't want to commit to early, I want to be able to experiment for now to see 
 That is why there are no standard commands available or the compiler and expression evaluator can be replaced.
 
 If you want to implement new features, please open an issue first to discuss it.
+
+### Compiling parser
+
+Rascal grammar is compiled with antlr4 (version 4.13.1).
+You need to download this version of antlr4 and put it in the root folder.
+You can regenerate the parser by running `npm run gen-parser`.
+
+If you download a different version of antlr4, you will need to update the script entry in `package.json`.
 
 ## Credits
 

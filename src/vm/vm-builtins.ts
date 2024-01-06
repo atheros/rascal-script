@@ -75,6 +75,10 @@ export class VmBuiltins {
         routine.vmApi.getScriptContext(routine.file)[argv[1]] = argv[2];
     }
 
+    static cmdVarSet<API extends object>(argv: any[], routine: VmRoutine<API>): VmCommandResult {
+        routine.routineContext[argv[1]] = argv[2];
+    }
+
     static cmdExpr<API extends object>(argv: any[], routine: VmRoutine<API>): VmCommandResult {
         const result = routine.vmApi.eval(argv[1], routine.context);
         if (result && result instanceof Promise) {

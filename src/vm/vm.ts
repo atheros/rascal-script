@@ -62,6 +62,7 @@ export class VirtualMachine<API extends object> {
             this.commands.set(VmScriptCommands.GLOBAL, noop);
             this.commands.set(VmScriptCommands.LOCAL, noop);
         }
+        this.commands.set(VmScriptCommands.SET, VmBuiltins.cmdVarSet);
         this.commands.set(VmScriptCommands.EXPR, VmBuiltins.cmdExpr);
         this.commands.set(VmScriptCommands.LABEL, VmBuiltins.cmdLabel);
 

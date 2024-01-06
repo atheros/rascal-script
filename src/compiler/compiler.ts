@@ -87,6 +87,8 @@ export class Compiler {
         } else if (line instanceof GlobalVarContext) {
             if (!root) throw new Error(`Global not allowed in sub block (line ${line.GLOBAL().symbol.line})`);
             this.consumeGlobalVar(line, code);
+        } else if (line instanceof SetVarContext) {
+            this.consumeSetVar(line, code);
         } else if (line instanceof ChoiceBlockContext) {
             this.consumeChoiceBlock(line, code);
         } else if (line instanceof WhitespaceContext) {
