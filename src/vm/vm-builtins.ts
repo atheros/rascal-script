@@ -1,4 +1,4 @@
-import {VmCommandCode, VmCommandResult} from './vm-types';
+import {VmChoiceOption, VmCommandCode, VmCommandResult} from './vm-types';
 import {VmError} from './vm-error';
 import {VmRoutine} from './vm-routine';
 
@@ -98,6 +98,31 @@ export class VmBuiltins {
 
     static cmdLabel<API extends object>(argv: any[], routine: VmRoutine<API>): VmCommandResult {
         routine.lastLabel = argv[1];
+    }
+
+    static cmdChoice<API extends object>(argv: any[], routine: VmRoutine<API>): VmCommandResult {
+        const [, cmdName, opts, ...args] = argv as [any, string, VmChoiceOption[], ...any[]];
+        const cmd = routine.vmApi.getCommand(cmdName);
+
+        return cmd(
+            [
+                cmdName,
+                opts.map((opt) => {
+                    let cond = !!opt.cond;
+                    if (typeof opt.cond === 'object' && 'expr' in opt.cond) {
+                        cond = routine.vmApi.eval(opt.cond.expr, routine.context);
+                    }
+
+                    return {
+                        text: opt.text,
+                        cond
+                    };
+                }),
+                ...args
+            ],
+            routine
+        )
+
     }
 
     private constructor() {

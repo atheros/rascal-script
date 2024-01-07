@@ -24,7 +24,7 @@ export class VmRoutine<API extends object> {
         public readonly parentContext: VmContext,
         public ip: number,
         public file: string,
-        public vmApi: VmRoutineInterface,
+        public vmApi: VmRoutineInterface<API>,
     ) {
         this.routineContext = {};
         this.updateContext();

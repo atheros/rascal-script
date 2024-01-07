@@ -115,7 +115,7 @@ whitespace
     ;
 
 choiceBlock
-    : whitespace? CHOICE ifexpr? EOL choiceOpt+ whitespace? END
+    : whitespace? CHOICE IDENTIFIER? commandArgs? ifexpr? EOL choiceOpt+ whitespace? END
     ;
 
 choiceOpt

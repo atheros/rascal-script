@@ -10,7 +10,7 @@ import MyGrammarParser, {
 import {CharStream, CommonTokenStream, ErrorListener, ParserRuleContext} from 'antlr4';
 import {Recognizer} from 'antlr4/src/antlr4/Recognizer';
 import {RecognitionException} from 'antlr4/src/antlr4/error/RecognitionException';
-import {VmScriptCommands} from '../vm/vm-types';
+import {VmChoiceOption, VmOpCommand} from '../vm/vm-types';
 
 class RascalErrorListener extends ErrorListener<any> {
     constructor(private errors: string[] = []) {
@@ -106,28 +106,42 @@ export class Compiler {
         const prefix = `${this.lastLabel}+ch${this.choiceIndex++}`;
         const end = `${prefix}x`;
         const options = choice.choiceOpt_list();
+        const commandArgs = choice.commandArgs();
+        const ifexpr = choice.ifexpr();
+        const argValues = commandArgs
+            ? commandArgs.value_list().map(arg => this.convertValue(arg))
+            : [];
 
-        const args: any[] = [];
+        if (ifexpr) {
+            this.consumeIfExpr(ifexpr, code);
+        }
+
+        const choices: VmChoiceOption[] = [];
 
         options.forEach(opt => {
             const rtext = opt.string_().getText();
             const text = rtext.substring(1, rtext.length - 1);
             const cond = opt.ifexpr()
-            args.push(text);
-            args.push(cond ? this.wrapExpr(cond.getText().substring(3).trim()) : true);
+            choices.push({
+                text,
+                cond: cond ? this.wrapExpr(cond.getText().substring(3).trim()) : true,
+            });
         });
 
-        code.push(['choice', ...args]);
+        const identifier = choice.IDENTIFIER();
+        const choiceCommand = identifier ? identifier.getText().trim() : 'choice';
+
+        code.push([VmOpCommand.CHOICE, choiceCommand, choices, argValues]);
         options.forEach((opt, index) => {
-            code.push(['.jC?', `${prefix}o${index}`, index]);
+            code.push([VmOpCommand.JUMP_CMD, `${prefix}o${index}`, index]);
         });
-        code.push(['.j', end]);
+        code.push([VmOpCommand.JUMP, end]);
 
         options.forEach((opt, index) => {
-            code.push([':', `${prefix}o${index}`]);
+            code.push([VmOpCommand.LABEL, `${prefix}o${index}`]);
             this.consumeLines(opt.line_list(), code);
             if (index < options.length - 1) {
-                code.push(['.j', end]);
+                code.push([VmOpCommand.JUMP, end]);
             }
         });
 
@@ -203,7 +217,7 @@ export class Compiler {
     }
 
     protected consumeIfExpr(ifexpr: IfexprContext, code: any[]) {
-        code.push([VmScriptCommands.COND, this.wrapExpr(ifexpr.getText().substring(3).trim())]);
+        code.push([VmOpCommand.COND, this.wrapExpr(ifexpr.getText().substring(3).trim())]);
     }
 
     protected convertValue(value: ValueContext) {

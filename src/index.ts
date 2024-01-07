@@ -4,7 +4,7 @@ export {
     VmCommandResult,
     VmRoutineInterface,
     VmScript,
-    VmScriptCommands,
+    VmOpCommand,
     VmCommandResultObject,
     VmCommandHandler,
     VmConfig,
@@ -12,8 +12,9 @@ export {
     VmCommands,
     VmTimeFunction,
     VmContext,
+    VmChoiceOption
 } from './vm/vm-types';
-export {VmError} from './vm/vm-error';
+export {VmError, VmRoutineError} from './vm/vm-error';
 export {VmBuiltins} from './vm/vm-builtins';
 export {Compiler} from './compiler/compiler';
 export {VmRoutine} from './vm/vm-routine';

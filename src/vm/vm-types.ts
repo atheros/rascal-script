@@ -12,7 +12,7 @@ export interface VmScriptSourceMapEntry {
     file?: string;
 }
 
-export enum VmScriptCommands {
+export enum VmOpCommand {
     /** Execute next command if condition is true, skip it otherwise. */
     COND = ".?",
     /** Perform unconditional jump to label. */
@@ -36,6 +36,8 @@ export enum VmScriptCommands {
     EXIT = ".x",
     /** Define a label location. */
     LABEL = ":",
+    /** Handle the choice selection. */
+    CHOICE = ".c",
     /** Execute expression */
     EXPR = "$",
 }
@@ -47,7 +49,7 @@ export interface VmScript {
     context: VmContext;
 }
 
-export interface VmRoutineInterface {
+export interface VmRoutineInterface<API extends object> {
     // createRoutine(scriptName: string, entryPoint: string): void;
 
     // addScript(scriptName: string, script: VmScript): Promise<VmScript>;
@@ -57,6 +59,8 @@ export interface VmRoutineInterface {
     getGlobalContext(): VmContext;
 
     getScriptContext(name: string): VmContext;
+
+    getCommand(name: string): VmCommandHandler<API>
 
     eval: VmExpressionEvaluator;
 }
@@ -90,6 +94,10 @@ export interface VmCommands<API extends object> {
     [key: string]: VmCommandHandler<API>;
 }
 
+export interface VmChoiceOption {
+    text: string;
+    cond: any;
+}
 
 export class VmConfig<API extends object> {
     /**

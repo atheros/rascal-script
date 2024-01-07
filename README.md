@@ -230,7 +230,7 @@ By default, RASCAL comes with a limited set of public built-in commands.
 
 There are also internal commands you cannot directly access from a script.
 They are on purpose breaking the command name rule and start with a `.`
-(see `VmScriptCommands` in [src/vm/vm-types.ts](src/vm/vm-types.ts)).
+(see `VmOpCommand` in [src/vm/vm-types.ts](src/vm/vm-types.ts)).
 You can however access their implementation with the `VmBuiltins` object.
 
 #### Command: global
@@ -420,7 +420,11 @@ The `choice` statement is a pseudo command that allows you to execute a block of
 on some conditions, possibly asynchronous.
 
 It is actually not implemented by default, so if you want to use it,
-you must provide your own implementation.
+you must provide your own implementation. 
+
+The default choice implementation should be called `choice`.
+You can provide additional choice commands if you want to, but they must be named `choice_XXX`,
+where `XXX` is the name of the choice command.
 
 Example:
 ```
@@ -456,6 +460,28 @@ choice
 end
 ```
 
+To use an alternative choice implementation, you must provide its name as the first argument to the `choice` statement.
+The following example uses the `choice_dialog` command instead of the default `choice` command.
+
+```
+choice dialog
+"Go left"
+    log "Going left"
+"Go right"
+    log "Going right"
+end
+```
+
+You can also pass additional arguments to the choice command.
+
+```
+choice "showUnavailable"
+"Go left"
+    log "Going left"
+"Go right" if not door_is_open
+    log "Going right"
+end
+```
 
 See [examples/adventure](examples/adventure) for a complete example on how to use and implement
 this command.
