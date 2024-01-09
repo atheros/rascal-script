@@ -3,6 +3,7 @@ import {createContextProxy, VmContextProxy} from './vm-context-proxy';
 
 export class VmRoutine<API extends object> {
     routineContext: VmContext;
+    /** Context proxy for this routine. */
     context: VmContextProxy;
     /** Do not run this routine before this time. */
     next?: number;
@@ -15,7 +16,7 @@ export class VmRoutine<API extends object> {
     /** Result stored by command. */
     cmdResult?: any;
     /** This routine is done. */
-    done = false
+    done = false;
 
 
 

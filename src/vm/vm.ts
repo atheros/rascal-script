@@ -218,7 +218,7 @@ export class VirtualMachine<API extends object> {
         data.scripts.forEach(s => {
             const script = this.scripts.get(s.name);
             if (!script) {
-                throw new Error(`Could not restore routine: Script not found ${s.name}`);
+                throw new VmError(`Could not restore routine: Script not found ${s.name}`);
             }
 
             script.context = s.context;
@@ -227,7 +227,7 @@ export class VirtualMachine<API extends object> {
         data.routines.forEach(r => {
             const script = this.scripts.get(r.file);
             if (!script) {
-                throw new Error(`Could not restore routine: Script not found ${r.file}`);
+                throw new VmError(`Could not restore routine: Script not found ${r.file}`);
             }
             const routine = this.call(r.file, null);
             routine.next = r.next;
@@ -246,7 +246,7 @@ export class VirtualMachine<API extends object> {
                 if (label >= 0) {
                     routine.ip = label;
                 } else {
-                    throw new Error(`Could not restore routine: Last label not found ${r.lastLabel}`);
+                    throw new VmError(`Could not restore routine: Last label not found ${r.lastLabel}`);
                 }
             }
 
@@ -272,8 +272,8 @@ export class VirtualMachine<API extends object> {
 
             const cmd = this.commands.get(argv[0]);
             if (!cmd) {
-                routine.done = true;
-                this.removeRoutine(routine);
+                // routine.done = true;
+                // this.removeRoutine(routine);
                 throw new VmRoutineError(routine, `Unknown command ${argv[0]} in ${routine.file}:${routine.ip}`);
             }
 

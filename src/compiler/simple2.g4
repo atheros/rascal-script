@@ -119,7 +119,7 @@ choiceBlock
     ;
 
 choiceOpt
-    : whitespace? string ifexpr? EOL (line EOL)*
+    : whitespace? string commandArgs? ifexpr? EOL (line EOL)*
     ;
 
 IFEXPR

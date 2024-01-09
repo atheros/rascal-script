@@ -97,6 +97,7 @@ export interface VmCommands<API extends object> {
 export interface VmChoiceOption {
     text: string;
     cond: any;
+    args: any[];
 }
 
 export class VmConfig<API extends object> {

@@ -122,9 +122,12 @@ export class Compiler {
             const rtext = opt.string_().getText();
             const text = rtext.substring(1, rtext.length - 1);
             const cond = opt.ifexpr()
+            const optArgs = opt.commandArgs();
+
             choices.push({
                 text,
                 cond: cond ? this.wrapExpr(cond.getText().substring(3).trim()) : true,
+                args: optArgs ? optArgs.value_list().map(arg => this.convertValue(arg)) : []
             });
         });
 
