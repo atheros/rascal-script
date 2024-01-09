@@ -148,6 +148,10 @@ export class VirtualMachine<API extends object> {
                 continue;
             }
 
+            if (routine.paused) {
+                continue;
+            }
+
             if (typeof routine.next === 'number') {
                 const delta = time - routine.next;
                 if (delta <= 0) {

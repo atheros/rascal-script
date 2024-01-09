@@ -17,6 +17,8 @@ export class VmRoutine<API extends object> {
     cmdResult?: any;
     /** This routine is done. */
     done = false;
+    /** This routine is paused and won't be executed until this flag is cleared. */
+    paused = false;
 
 
 
