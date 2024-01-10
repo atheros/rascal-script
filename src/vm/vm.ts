@@ -181,6 +181,7 @@ export class VirtualMachine<API extends object> {
                     cmdResult: routine.cmdResult,
                     done: routine.done,
                     context: routine.routineContext,
+                    paused: routine.paused,
                     ...this.storeRoutineIP(routine),
                 };
             }),
@@ -241,6 +242,7 @@ export class VirtualMachine<API extends object> {
             routine.cmdResult = r.cmdResult;
             routine.done = r.done;
             routine.routineContext = r.context;
+            routine.paused = r.paused;
             const lines = script.code.map((l: string) => JSON.stringify(l));
             const line = findLine(r.code, lines, r.ip, true);
             if (line !== -1) {
@@ -259,7 +261,7 @@ export class VirtualMachine<API extends object> {
     }
 
     private async runRoutine(routine: VmRoutine<API>, time: number): Promise<boolean> {
-        while (!routine.done) {
+        while (!routine.done && !routine.paused) {
             const script = this.scripts.get(routine.file);
             if (!script) {
                 routine.done = true;
