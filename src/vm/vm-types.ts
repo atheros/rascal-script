@@ -60,9 +60,11 @@ export interface VmRoutineInterface<API extends object> {
 
     getScriptContext(name: string): VmContext;
 
-    getCommand(name: string): VmCommandHandler<API>
+    getCommand(name: string): VmCommandHandler<API>;
 
     eval: VmExpressionEvaluator;
+
+    call(file: string, entryPoint: string | null): VmRoutine<API>;
 }
 
 export enum VmCommandCode {

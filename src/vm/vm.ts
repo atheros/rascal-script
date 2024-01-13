@@ -86,7 +86,8 @@ export class VirtualMachine<API extends object> {
                 }
                 return cmd;
             },
-            eval: this.expressionEvaluator
+            eval: this.expressionEvaluator,
+            call: (file, entryPoint) => this.call(file, entryPoint),
         }
     }
 
