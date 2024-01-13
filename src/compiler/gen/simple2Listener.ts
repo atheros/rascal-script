@@ -1,4 +1,4 @@
-// Generated from D:/Projects/rascal-script/src/compiler/simple2.g4 by ANTLR 4.13.1
+// Generated from src/compiler/simple2.g4 by ANTLR 4.13.1
 
 import {ParseTreeListener} from "antlr4";
 

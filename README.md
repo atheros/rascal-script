@@ -230,7 +230,7 @@ By default, RASCAL comes with a limited set of public built-in commands.
 
 There are also internal commands you cannot directly access from a script.
 They are on purpose breaking the command name rule and start with a `.`
-(see `VmScriptCommands` in [src/vm/vm-types.ts](src/vm/vm-types.ts)).
+(see `VmOpCommand` in [src/vm/vm-types.ts](src/vm/vm-types.ts)).
 You can however access their implementation with the `VmBuiltins` object.
 
 #### Command: global
@@ -262,14 +262,14 @@ See also
 [Co-routines](#Co-routines),
 [Expressions](#Expressions).
 
-#### Command: let
+#### Command: set
 
 Declare a variable in routine context and assign a value to it.
 
 Example:
 ```
-let someVar = ${1 + 2}
-let anotherVar = "Hello World"
+set someVar = ${1 + 2}
+set anotherVar = "Hello World"
 ```
 
 See also
@@ -329,12 +329,12 @@ The **script** context is shared between all routines that are currently executi
 You can use the `local` command to create a variable in script context.
 
 The **routine** context is not shared. It is private to the routine that is currently executing.
-You can use the `let` command to create a variable in routine context.
+You can use the `set` command to create a variable in routine context.
 
 ```
 global aGlobalVar = true
 local aScriptVar = "Hello World"
-let aRoutineVar = ${1 + 2}
+set aRoutineVar = ${1 + 2}
 ```
 
 ##### Declaration moment
@@ -420,7 +420,11 @@ The `choice` statement is a pseudo command that allows you to execute a block of
 on some conditions, possibly asynchronous.
 
 It is actually not implemented by default, so if you want to use it,
-you must provide your own implementation.
+you must provide your own implementation. 
+
+The default choice implementation should be called `choice`.
+You can provide additional choice commands if you want to, but they must be named `choice_XXX`,
+where `XXX` is the name of the choice command.
 
 Example:
 ```
@@ -456,6 +460,28 @@ choice
 end
 ```
 
+To use an alternative choice implementation, you must provide its name as the first argument to the `choice` statement.
+The following example uses the `choice_dialog` command instead of the default `choice` command.
+
+```
+choice dialog
+"Go left"
+    log "Going left"
+"Go right"
+    log "Going right"
+end
+```
+
+You can also pass additional arguments to the choice command.
+
+```
+choice "showUnavailable"
+"Go left"
+    log "Going left"
+"Go right" if not door_is_open
+    log "Going right"
+end
+```
 
 See [examples/adventure](examples/adventure) for a complete example on how to use and implement
 this command.
@@ -519,6 +545,14 @@ I don't want to commit to early, I want to be able to experiment for now to see 
 That is why there are no standard commands available or the compiler and expression evaluator can be replaced.
 
 If you want to implement new features, please open an issue first to discuss it.
+
+### Compiling parser
+
+Rascal grammar is compiled with antlr4 (version 4.13.1).
+You need to download this version of antlr4 and put it in the root folder.
+You can regenerate the parser by running `npm run gen-parser`.
+
+If you download a different version of antlr4, you will need to update the script entry in `package.json`.
 
 ## Credits
 

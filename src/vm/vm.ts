@@ -1,11 +1,11 @@
-import {VmError} from './vm-error';
+import {VmError, VmRoutineError} from './vm-error';
 import {
     VmCommandCode, VmCodeCompiler,
     VmCommandHandler,
     VmConfig, VmExpressionEvaluator,
     VmRoutineInterface,
     VmScript,
-    VmScriptCommands, VmTimeFunction, VmCommandResultObject, VmContext
+    VmOpCommand, VmTimeFunction, VmCommandResultObject, VmContext
 } from './vm-types';
 import {VmBuiltins} from './vm-builtins';
 import {VmRoutine} from './vm-routine';
@@ -30,7 +30,7 @@ export class VirtualMachine<API extends object> {
     // TODO: pause/resume execution of specific routines
 
 
-    private readonly vmApi: VmRoutineInterface;
+    private readonly vmApi: VmRoutineInterface<API>;
 
     constructor(
         config: VmConfig<API>
@@ -47,23 +47,25 @@ export class VirtualMachine<API extends object> {
         this.getTime = config.timeFunction ?? (() => Date.now());
 
         const noop = () => undefined;
-        this.commands.set(VmScriptCommands.COND, VmBuiltins.cmdCondNext);
-        this.commands.set(VmScriptCommands.JUMP, VmBuiltins.cmdJump);
-        this.commands.set(VmScriptCommands.JUMP_IF, VmBuiltins.cmdJumpIf)
-        this.commands.set(VmScriptCommands.JUMP_IFN, VmBuiltins.cmdJumpIfNot);
-        this.commands.set(VmScriptCommands.JUMP_CMD, VmBuiltins.cmdJumpCmd);
-        this.commands.set(VmScriptCommands.YIELD, VmBuiltins.cmdYield);
-        this.commands.set(VmScriptCommands.EXIT, VmBuiltins.cmdExit);
+        this.commands.set(VmOpCommand.COND, VmBuiltins.cmdCondNext);
+        this.commands.set(VmOpCommand.JUMP, VmBuiltins.cmdJump);
+        this.commands.set(VmOpCommand.JUMP_IF, VmBuiltins.cmdJumpIf)
+        this.commands.set(VmOpCommand.JUMP_IFN, VmBuiltins.cmdJumpIfNot);
+        this.commands.set(VmOpCommand.JUMP_CMD, VmBuiltins.cmdJumpCmd);
+        this.commands.set(VmOpCommand.YIELD, VmBuiltins.cmdYield);
+        this.commands.set(VmOpCommand.EXIT, VmBuiltins.cmdExit);
+        this.commands.set(VmOpCommand.CHOICE, VmBuiltins.cmdChoice);
 
         if (this.initVarsAtRuntime) {
-            this.commands.set(VmScriptCommands.GLOBAL, VmBuiltins.cmdVarGlobal);
-            this.commands.set(VmScriptCommands.LOCAL, VmBuiltins.cmdVarLocal);
+            this.commands.set(VmOpCommand.GLOBAL, VmBuiltins.cmdVarGlobal);
+            this.commands.set(VmOpCommand.LOCAL, VmBuiltins.cmdVarLocal);
         } else {
-            this.commands.set(VmScriptCommands.GLOBAL, noop);
-            this.commands.set(VmScriptCommands.LOCAL, noop);
+            this.commands.set(VmOpCommand.GLOBAL, noop);
+            this.commands.set(VmOpCommand.LOCAL, noop);
         }
-        this.commands.set(VmScriptCommands.EXPR, VmBuiltins.cmdExpr);
-        this.commands.set(VmScriptCommands.LABEL, VmBuiltins.cmdLabel);
+        this.commands.set(VmOpCommand.SET, VmBuiltins.cmdVarSet);
+        this.commands.set(VmOpCommand.EXPR, VmBuiltins.cmdExpr);
+        this.commands.set(VmOpCommand.LABEL, VmBuiltins.cmdLabel);
 
         if (config.commands) {
             Object.keys(config.commands).forEach((key) => {
@@ -77,7 +79,15 @@ export class VirtualMachine<API extends object> {
             getScriptContext: (script) => {
                 return this.scripts.get(script).context;
             },
-            eval: this.expressionEvaluator
+            getCommand: (name: string)=> {
+                const cmd = this.commands.get(name);
+                if (!cmd) {
+                    throw new VmError(`Command ${name} not found`);
+                }
+                return cmd;
+            },
+            eval: this.expressionEvaluator,
+            call: (file, entryPoint) => this.call(file, entryPoint),
         }
     }
 
@@ -139,6 +149,10 @@ export class VirtualMachine<API extends object> {
                 continue;
             }
 
+            if (routine.paused) {
+                continue;
+            }
+
             if (typeof routine.next === 'number') {
                 const delta = time - routine.next;
                 if (delta <= 0) {
@@ -168,6 +182,7 @@ export class VirtualMachine<API extends object> {
                     cmdResult: routine.cmdResult,
                     done: routine.done,
                     context: routine.routineContext,
+                    paused: routine.paused,
                     ...this.storeRoutineIP(routine),
                 };
             }),
@@ -209,7 +224,7 @@ export class VirtualMachine<API extends object> {
         data.scripts.forEach(s => {
             const script = this.scripts.get(s.name);
             if (!script) {
-                throw new Error(`Could not restore routine: Script not found ${s.name}`);
+                throw new VmError(`Could not restore routine: Script not found ${s.name}`);
             }
 
             script.context = s.context;
@@ -218,7 +233,7 @@ export class VirtualMachine<API extends object> {
         data.routines.forEach(r => {
             const script = this.scripts.get(r.file);
             if (!script) {
-                throw new Error(`Could not restore routine: Script not found ${r.file}`);
+                throw new VmError(`Could not restore routine: Script not found ${r.file}`);
             }
             const routine = this.call(r.file, null);
             routine.next = r.next;
@@ -228,16 +243,17 @@ export class VirtualMachine<API extends object> {
             routine.cmdResult = r.cmdResult;
             routine.done = r.done;
             routine.routineContext = r.context;
+            routine.paused = r.paused;
             const lines = script.code.map((l: string) => JSON.stringify(l));
             const line = findLine(r.code, lines, r.ip, true);
             if (line !== -1) {
                 routine.ip = line;
             } else {
-                const label = script.code.findIndex(l => l[0] === VmScriptCommands.LABEL && l[1] === r.lastLabel);
+                const label = script.code.findIndex(l => l[0] === VmOpCommand.LABEL && l[1] === r.lastLabel);
                 if (label >= 0) {
                     routine.ip = label;
                 } else {
-                    throw new Error(`Could not restore routine: Last label not found ${r.lastLabel}`);
+                    throw new VmError(`Could not restore routine: Last label not found ${r.lastLabel}`);
                 }
             }
 
@@ -246,12 +262,12 @@ export class VirtualMachine<API extends object> {
     }
 
     private async runRoutine(routine: VmRoutine<API>, time: number): Promise<boolean> {
-        while (!routine.done) {
+        while (!routine.done && !routine.paused) {
             const script = this.scripts.get(routine.file);
             if (!script) {
                 routine.done = true;
                 this.removeRoutine(routine);
-                throw new VmError(`Script ${routine.file} not found. Execution aborted.`);
+                throw new VmRoutineError(routine, `Script ${routine.file} not found. Execution aborted.`);
             }
 
             if (routine.ip >= script.code.length) {
@@ -263,9 +279,9 @@ export class VirtualMachine<API extends object> {
 
             const cmd = this.commands.get(argv[0]);
             if (!cmd) {
-                routine.done = true;
-                this.removeRoutine(routine);
-                throw new VmError(`Unknown command ${argv[0]} in ${routine.file}:${routine.ip}`);
+                // routine.done = true;
+                // this.removeRoutine(routine);
+                throw new VmRoutineError(routine, `Unknown command ${argv[0]} in ${routine.file}:${routine.ip}`);
             }
 
             routine.cmdName = argv[0];
@@ -326,11 +342,11 @@ export class VirtualMachine<API extends object> {
         const proxy = createContextProxy(script.context, this.context);
         script.code.forEach((argv, index) => {
             const op = argv[0];
-            if (op === VmScriptCommands.GLOBAL && !this.initVarsAtRuntime) {
+            if (op === VmOpCommand.GLOBAL && !this.initVarsAtRuntime) {
                 this.context[argv[1]] = this.parseArgs([argv[2]], proxy)[0];
-            } else if (op === VmScriptCommands.LOCAL && !this.initVarsAtRuntime) {
+            } else if (op === VmOpCommand.LOCAL && !this.initVarsAtRuntime) {
                 script.context[argv[1]] = this.parseArgs([argv[2]], proxy)[0];
-            } else if (op === VmScriptCommands.LABEL) {
+            } else if (op === VmOpCommand.LABEL) {
                 script.labels[argv[1]] = index;
             }
         });
@@ -344,9 +360,7 @@ export class VirtualMachine<API extends object> {
                     // console.log(`eval arg ${i}`, argv[i], this.expressionEvaluator(argv[i].expr, routine.context));
                     result.push(this.expressionEvaluator(argv[i].expr, context));
                 } else {
-                    // FIXME: Maybe normal object? Most likely error.
-                    // console.log(`failed arg ${i}`, argv[i]);
-                    result.push(null);
+                    result.push(argv[i]);
                 }
             } else {
                 result.push(argv[i]);

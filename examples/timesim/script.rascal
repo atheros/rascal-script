@@ -1,4 +1,4 @@
-local iterations = 0
+set iterations = 0
 
 while true
   log "Iteration: " ${iterations}

@@ -22,7 +22,8 @@
     "test": "jest",
     "build": "tsc",
     "lint": "eslint .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "gen-parser": "java -jar antlr-4.13.1-complete.jar -o src/compiler/gen -package grammar -Dlanguage=TypeScript src/compiler/simple2.g4"
   },
   "files": [
     "dist"

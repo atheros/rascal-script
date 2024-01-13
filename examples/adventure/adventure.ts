@@ -3,7 +3,7 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {VirtualMachine, VmRoutine, VmBuiltins} from 'rascal-script';
 import path from 'node:path';
 import {compile} from 'rascal-script/dist/compiler/compiler';
-import {VmCommandCode, VmCommandResult, VmContext} from 'rascal-script';
+import {VmCommandCode, VmCommandResult, VmContext, VmChoiceOption} from 'rascal-script';
 import {Parser} from 'expr-eval';
 import {cmdJump, cmdLog, cmdWait} from '../utils/commands';
 import {dumpVM} from '../utils/dump';
@@ -23,7 +23,7 @@ let activePrompt: any = null;
 type API = { save: () => Promise<void> };
 
 function choice(argv: any[], routine: VmRoutine<API>): VmCommandResult {
-    const [, ...args] = argv;
+    const [, opts] = argv as [any, VmChoiceOption[]];
 
     if (routine.cmdState) {
         return {
@@ -35,14 +35,13 @@ function choice(argv: any[], routine: VmRoutine<API>): VmCommandResult {
     if (!activePrompt) {
         const choices: string[] = [];
         const results = {}
-        const cnt = Math.floor(args.length / 2);
-        for(let i = 0; i < cnt; i++) {
-            const index = i * 2;
-            if (args[index + 1]) {
-                choices.push(args[index]);
-                results[args[index]] = i;
+
+        opts.forEach((opt, index) => {
+            if (opt.cond) {
+                choices.push(opt.text);
+                results[opt.text] = index;
             }
-        }
+        });
 
         if (choices.length === 0) {
             throw new Error('No valid choices given!');

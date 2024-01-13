@@ -12,7 +12,7 @@ export interface VmScriptSourceMapEntry {
     file?: string;
 }
 
-export enum VmScriptCommands {
+export enum VmOpCommand {
     /** Execute next command if condition is true, skip it otherwise. */
     COND = ".?",
     /** Perform unconditional jump to label. */
@@ -24,16 +24,20 @@ export enum VmScriptCommands {
     /** Jump if command result equals value. */
     JUMP_CMD = ".jC?",
     // JUMP_IF_ELSE = ".j?!",
-    /** Declare a local variable. */
+    /** Declare a script local variable. */
     LOCAL = ".vl",
     /** Declare a global variable. */
     GLOBAL = ".vg",
+    /** Declare a routine variable. */
+    SET = '.vs',
     /** Yield execution to another routine. */
     YIELD = ".y",
     /** Exit execution of this routine. */
     EXIT = ".x",
     /** Define a label location. */
     LABEL = ":",
+    /** Handle the choice selection. */
+    CHOICE = ".c",
     /** Execute expression */
     EXPR = "$",
 }
@@ -45,7 +49,7 @@ export interface VmScript {
     context: VmContext;
 }
 
-export interface VmRoutineInterface {
+export interface VmRoutineInterface<API extends object> {
     // createRoutine(scriptName: string, entryPoint: string): void;
 
     // addScript(scriptName: string, script: VmScript): Promise<VmScript>;
@@ -56,7 +60,11 @@ export interface VmRoutineInterface {
 
     getScriptContext(name: string): VmContext;
 
+    getCommand(name: string): VmCommandHandler<API>;
+
     eval: VmExpressionEvaluator;
+
+    call(file: string, entryPoint: string | null): VmRoutine<API>;
 }
 
 export enum VmCommandCode {
@@ -88,6 +96,11 @@ export interface VmCommands<API extends object> {
     [key: string]: VmCommandHandler<API>;
 }
 
+export interface VmChoiceOption {
+    text: string;
+    cond: any;
+    args: any[];
+}
 
 export class VmConfig<API extends object> {
     /**

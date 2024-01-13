@@ -14,6 +14,7 @@ line
     | whileBlock
     | localVar
     | globalVar
+    | setVar
     | choiceBlock
     | whitespace+
     ;
@@ -57,6 +58,10 @@ localVar
 
 globalVar
     : whitespace? GLOBAL whitespace IDENTIFIER whitespace? EQUALS whitespace? value comment?
+    ;
+
+setVar
+    : whitespace? SET whitespace IDENTIFIER whitespace? EQUALS whitespace? value comment?
     ;
 
 label
@@ -110,11 +115,11 @@ whitespace
     ;
 
 choiceBlock
-    : whitespace? CHOICE ifexpr? EOL choiceOpt+ whitespace? END
+    : whitespace? CHOICE IDENTIFIER? commandArgs? ifexpr? EOL choiceOpt+ whitespace? END
     ;
 
 choiceOpt
-    : whitespace? string ifexpr? EOL (line EOL)*
+    : whitespace? string commandArgs? ifexpr? EOL (line EOL)*
     ;
 
 IFEXPR
@@ -161,6 +166,10 @@ EXPR
 
 LOCAL
     : 'local'
+    ;
+
+SET
+    : 'set'
     ;
 
 DEFINE
