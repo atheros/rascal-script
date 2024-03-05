@@ -35,12 +35,12 @@
     "expr-eval": "^2.0.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
+    "@commitlint/cli": "^19.0.3",
+    "@commitlint/config-conventional": "^19.0.3",
     "@tsconfig/node18": "^18.2.2",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.6",
-    "@typescript-eslint/eslint-plugin": "^6.17.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^6.17.0",
     "antlr4": "^4.13.1-patch-1",
     "eslint": "^8.56.0",
@@ -51,6 +51,6 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "husky": "^8.0.0"
+    "husky": "^9.0.11"
   }
 }
